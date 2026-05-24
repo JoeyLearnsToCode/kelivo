@@ -1622,46 +1622,36 @@ class _HomePageState extends State<HomePage>
     Map<String, List<ChatMessage>> byGroup, {
     bool deleteAllVersions = false,
   }) async {
-    final l10n = AppLocalizations.of(context)!;
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(
-          deleteAllVersions
-              ? l10n.homePageDeleteAllVersions
-              : l10n.homePageDeleteMessage,
-        ),
-        content: Text(
-          deleteAllVersions
-              ? l10n.homePageDeleteAllVersionsConfirm
-              : l10n.homePageDeleteMessageConfirm,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10n.homePageCancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(
-              l10n.homePageDelete,
-              style: const TextStyle(color: Colors.red),
-            ),
-          ),
-        ],
-      ),
-    );
-    if (confirm != true) return;
-
     if (deleteAllVersions) {
+      final l10n = AppLocalizations.of(context)!;
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(l10n.homePageDeleteAllVersions),
+          content: Text(l10n.homePageDeleteAllVersionsConfirm),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: Text(l10n.homePageCancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: Text(
+                l10n.homePageDelete,
+                style: const TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        ),
+      );
+      if (confirm != true) return;
       await _controller.deleteAllMessageVersions(
         message: message,
         byGroup: byGroup,
       );
-      return;
+    } else {
+      await _controller.deleteMessage(message: message, byGroup: byGroup);
     }
-
-    await _controller.deleteMessage(message: message, byGroup: byGroup);
   }
 
   Map<String, TranslationUiState> _buildTranslationUiStates() {
