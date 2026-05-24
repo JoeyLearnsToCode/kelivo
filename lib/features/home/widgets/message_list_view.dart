@@ -812,7 +812,7 @@ class _MessageListViewState extends State<MessageListView> {
         final action = await showMessageMoreSheet(
           context,
           message,
-          canDeleteAllVersions: total > 1,
+          canDeleteAllVersions: true,
         );
         if (action == MessageMoreAction.deleteCurrentVersion) {
           await widget.onDeleteMessage?.call(message, widget.byGroup);
