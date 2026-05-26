@@ -144,7 +144,7 @@ void main() {
     focusNode.dispose();
   });
 
-  testWidgets('绘图模式胶囊可关闭并传递聊天接口路由', (tester) async {
+  testWidgets('绘图模式不默认开启且禁用后传递聊天接口路由', (tester) async {
     final controller = TextEditingController(text: 'draw a cat');
     final focusNode = FocusNode();
     final mediaController = ChatInputBarController();
@@ -176,11 +176,6 @@ void main() {
       ),
     );
 
-    expect(find.text('Image mode'), findsOneWidget);
-
-    await tester.tap(find.byIcon(Lucide.X));
-    await tester.pumpAndSettle();
-
     expect(find.text('Image mode'), findsNothing);
     expect(mediaController.allowImagesApiRouting, isFalse);
 
@@ -193,7 +188,7 @@ void main() {
     focusNode.dispose();
   });
 
-  testWidgets('绘图模式关闭后切换对话会重新显示', (tester) async {
+  testWidgets('绘图模式关闭后切换对话保持关闭', (tester) async {
     final controller = TextEditingController(text: 'draw a cat');
     final focusNode = FocusNode();
     final settings = SettingsProvider();
@@ -220,11 +215,6 @@ void main() {
       ),
     );
 
-    expect(find.text('Image mode'), findsOneWidget);
-
-    await tester.tap(find.byIcon(Lucide.X));
-    await tester.pumpAndSettle();
-
     expect(find.text('Image mode'), findsNothing);
 
     await tester.pumpWidget(
@@ -238,7 +228,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Image mode'), findsOneWidget);
+    expect(find.text('Image mode'), findsNothing);
 
     controller.dispose();
     focusNode.dispose();
