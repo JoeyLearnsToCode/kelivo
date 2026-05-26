@@ -191,7 +191,7 @@ class _ChatInputBarState extends State<ChatInputBar>
         ? '${widget.conversationId ?? ''}::$providerKey::$modelId'
         : null;
     if (nextKey != _lastImageModeModelKey) {
-      _dismissedImageModeModelKey = null;
+      _dismissedImageModeModelKey = nextKey;
       _lastImageModeModelKey = nextKey;
     }
     _imageModeModelKey = nextKey;
