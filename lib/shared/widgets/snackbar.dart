@@ -365,7 +365,7 @@ class _NotificationWidgetState extends State<NotificationWidget>
           ),
         child: Container(
           margin: const EdgeInsets.only(bottom: 8),
-          constraints: const BoxConstraints(maxWidth: 400),
+          constraints: const BoxConstraints(maxWidth: 400, maxHeight: 140),
           decoration: BoxDecoration(
             color: isDark
                 ? const Color(0xFF1C1C1E).withValues(alpha: 0.98)
@@ -391,6 +391,8 @@ class _NotificationWidgetState extends State<NotificationWidget>
                   Expanded(
                     child: Text(
                       widget.notification.message,
+                      maxLines: 5,
+                      overflow: TextOverflow.ellipsis,
                       style:
                           (Theme.of(context).textTheme.bodyMedium ??
                                   const TextStyle())
