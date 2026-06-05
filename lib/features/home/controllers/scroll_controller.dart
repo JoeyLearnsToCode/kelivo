@@ -54,12 +54,18 @@ class _AutoFollowScrollPosition extends ScrollPositionWithSingleContext {
     // controller listener that sets _isUserScrolling.  Without this check,
     // correctPixels would override the user's drag for one frame, causing a
     // "stuck / can't scroll up" feeling.
+    //
+    // Note: we intentionally do NOT return false here.  Returning false
+    // triggers a viewport re-layout that can desync the ScrollPosition with
+    // the viewport's internal state, making it impossible to scroll back down
+    // after scrolling up (see #fix/scroll-stuck-up-master).  correctPixels
+    // already corrects the pixel value in the layout phase — the next paint
+    // will render at the corrected offset without a forced re-layout.
     if (controller.shouldAutoFollow() &&
         userScrollDirection == ScrollDirection.idle) {
       final gap = this.maxScrollExtent - pixels;
       if (gap > 0.5) {
         correctPixels(this.maxScrollExtent);
-        return false; // Force viewport re-layout with corrected position
       }
     }
     return result;
