@@ -251,7 +251,7 @@ class _DesktopProvidersBodyState extends State<_DesktopProvidersBody> {
                       onPressed: () => Navigator.of(ctx).pop(true),
                       child: Text(
                         l10n.providerDetailPageDeleteButton,
-                        style: const TextStyle(color: Colors.red),
+                        style: TextStyle(color: Colors.red),
                       ),
                     ),
                   ],
@@ -410,7 +410,7 @@ class _DesktopProvidersBodyState extends State<_DesktopProvidersBody> {
                                   _groupReorderRestoreStartTimer?.cancel();
                                 }
                               },
-                              onReorder: (oldIndex, newIndex) async {
+                              onReorderItem: (oldIndex, newIndex) async {
                                 if (_searchQuery.isNotEmpty) {
                                   return;
                                 }
@@ -631,9 +631,8 @@ class _DesktopProvidersBodyState extends State<_DesktopProvidersBody> {
                               buildDefaultDragHandles: false,
                               padding: EdgeInsets.zero,
                               itemCount: filteredOrdered.length,
-                              onReorder: (oldIndex, newIndex) async {
+                              onReorderItem: (oldIndex, newIndex) async {
                                 if (_searchQuery.isNotEmpty) return;
-                                if (newIndex > oldIndex) newIndex -= 1;
                                 final list =
                                     List<({String name, String key})>.from(
                                       ordered,
@@ -895,7 +894,7 @@ class _DesktopProviderGroupHeaderRowState
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 13.5,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: AppFontWeights.emphasis,
                     color: cs.onSurface.withValues(alpha: 0.9),
                   ),
                 ),
@@ -1082,9 +1081,9 @@ class _DesktopProviderDetailPaneState
                     Expanded(
                       child: Text(
                         title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: AppFontWeights.emphasis,
                         ),
                       ),
                     ),
@@ -1098,7 +1097,7 @@ class _DesktopProviderDetailPaneState
                 TextField(
                   controller: ctrl,
                   autofocus: true,
-                  style: const TextStyle(fontSize: 13),
+                  style: TextStyle(fontSize: 13),
                   decoration: _inputDecoration(ctx).copyWith(hintText: hint),
                   onSubmitted: (v) => Navigator.of(ctx).pop(v.trim()),
                 ),
@@ -1166,9 +1165,9 @@ class _DesktopProviderDetailPaneState
                         cfg.name.isNotEmpty ? cfg.name : widget.providerKey,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: AppFontWeights.emphasis,
                         ),
                       ),
                     ),
@@ -1185,9 +1184,9 @@ class _DesktopProviderDetailPaneState
                         child: ProviderBalanceBadge(
                           providerKey: widget.providerKey,
                           displayName: widget.displayName,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: AppFontWeights.emphasis,
                           ),
                           color: cs.primary,
                         ),
@@ -1274,7 +1273,7 @@ class _DesktopProviderDetailPaneState
                               text: 'https://dashboard.x-aio.com',
                               style: TextStyle(
                                 color: cs.primary,
-                                fontWeight: FontWeight.w700,
+                                fontWeight: AppFontWeights.emphasis,
                               ),
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () async {
@@ -1337,7 +1336,7 @@ class _DesktopProviderDetailPaneState
                               text: 'https://siliconflow.cn',
                               style: TextStyle(
                                 color: cs.primary,
-                                fontWeight: FontWeight.w700,
+                                fontWeight: AppFontWeights.emphasis,
                               ),
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () async {
@@ -1401,7 +1400,7 @@ class _DesktopProviderDetailPaneState
                                 text: '••••••••',
                               ),
                               readOnly: true,
-                              style: const TextStyle(fontSize: 14),
+                              style: TextStyle(fontSize: 14),
                               decoration: _inputDecoration(context),
                             ),
                           ),
@@ -1431,7 +1430,7 @@ class _DesktopProviderDetailPaneState
                         old.copyWith(apiKey: v),
                       );
                     },
-                    style: const TextStyle(fontSize: 14),
+                    style: TextStyle(fontSize: 14),
                     decoration: _inputDecoration(context).copyWith(
                       hintText: l10n.providerDetailPageApiKeyHint,
                       suffixIcon: MouseRegion(
@@ -1546,7 +1545,7 @@ class _DesktopProviderDetailPaneState
                         old.copyWith(baseUrl: v),
                       );
                     },
-                    style: const TextStyle(fontSize: 14),
+                    style: TextStyle(fontSize: 14),
                     decoration: _inputDecoration(context).copyWith(
                       hintText: ProviderConfig.defaultsFor(
                         widget.providerKey,
@@ -1612,7 +1611,7 @@ class _DesktopProviderDetailPaneState
                         old.copyWith(location: v.trim()),
                       );
                     },
-                    style: const TextStyle(fontSize: 14),
+                    style: TextStyle(fontSize: 14),
                     decoration: _inputDecoration(
                       context,
                     ).copyWith(hintText: 'us-central1'),
@@ -1674,7 +1673,7 @@ class _DesktopProviderDetailPaneState
                         old.copyWith(projectId: v),
                       );
                     },
-                    style: const TextStyle(fontSize: 14),
+                    style: TextStyle(fontSize: 14),
                     decoration: _inputDecoration(
                       context,
                     ).copyWith(hintText: 'my-project-id'),
@@ -1718,7 +1717,7 @@ class _DesktopProviderDetailPaneState
                           old.copyWith(serviceAccountJson: v),
                         );
                       },
-                      style: const TextStyle(fontSize: 14),
+                      style: TextStyle(fontSize: 14),
                       decoration: _inputDecoration(context).copyWith(
                         hintText: '{\n  "type": "service_account", ...\n}',
                       ),
@@ -1842,7 +1841,7 @@ class _DesktopProviderDetailPaneState
                         old.copyWith(chatPath: v),
                       );
                     },
-                    style: const TextStyle(fontSize: 14),
+                    style: TextStyle(fontSize: 14),
                     decoration: _inputDecoration(
                       context,
                     ).copyWith(hintText: '/chat/completions'),
@@ -1861,9 +1860,9 @@ class _DesktopProviderDetailPaneState
                           AppLocalizations.of(
                             context,
                           )!.providerDetailPageModelsTitle,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: AppFontWeights.emphasis,
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -1886,7 +1885,7 @@ class _DesktopProviderDetailPaneState
                                         controller: _filterCtrl,
                                         focusNode: _searchFocus,
                                         autofocus: true,
-                                        style: const TextStyle(fontSize: 14),
+                                        style: TextStyle(fontSize: 14),
                                         decoration: _inputDecoration(context)
                                             .copyWith(
                                               hintText: l10n
@@ -2413,9 +2412,9 @@ class _DesktopProviderDetailPaneState
                                   cfgNow.name.isNotEmpty
                                       ? cfgNow.name
                                       : widget.providerKey,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 13.5,
-                                    fontWeight: FontWeight.w700,
+                                    fontWeight: AppFontWeights.emphasis,
                                   ),
                                 ),
                               ),
@@ -2544,7 +2543,7 @@ class _DesktopProviderDetailPaneState
                                 },
                                 child: TextField(
                                   controller: nameCtrl,
-                                  style: const TextStyle(fontSize: 14),
+                                  style: TextStyle(fontSize: 14),
                                   decoration: _inputDecoration(ctx),
                                   textInputAction: TextInputAction.done,
                                   onSubmitted: (_) async {
@@ -2831,7 +2830,7 @@ class _DesktopProviderDetailPaneState
                                         l10n.providerDetailPageBalanceApiPathLabel,
                                         TextField(
                                           controller: _balanceApiPathCtrl,
-                                          style: const TextStyle(fontSize: 13),
+                                          style: TextStyle(fontSize: 13),
                                           decoration: _proxyInputDecoration(
                                             ctx,
                                           ),
@@ -2867,7 +2866,7 @@ class _DesktopProviderDetailPaneState
                                         l10n.providerDetailPageBalanceResultPathLabel,
                                         TextField(
                                           controller: _balanceResultPathCtrl,
-                                          style: const TextStyle(fontSize: 13),
+                                          style: TextStyle(fontSize: 13),
                                           decoration: _proxyInputDecoration(
                                             ctx,
                                           ),
@@ -3225,7 +3224,7 @@ class _DesktopProviderDetailPaneState
                                         },
                                         child: TextField(
                                           controller: proxyHostCtrl,
-                                          style: const TextStyle(fontSize: 13),
+                                          style: TextStyle(fontSize: 13),
                                           decoration: _proxyInputDecoration(
                                             ctx,
                                           ).copyWith(hintText: '127.0.0.1'),
@@ -3274,7 +3273,7 @@ class _DesktopProviderDetailPaneState
                                         },
                                         child: TextField(
                                           controller: proxyPortCtrl,
-                                          style: const TextStyle(fontSize: 13),
+                                          style: TextStyle(fontSize: 13),
                                           decoration: _proxyInputDecoration(
                                             ctx,
                                           ).copyWith(hintText: '8080'),
@@ -3324,7 +3323,7 @@ class _DesktopProviderDetailPaneState
                                         },
                                         child: TextField(
                                           controller: proxyUserCtrl,
-                                          style: const TextStyle(fontSize: 13),
+                                          style: TextStyle(fontSize: 13),
                                           decoration: _proxyInputDecoration(
                                             ctx,
                                           ),
@@ -3374,7 +3373,7 @@ class _DesktopProviderDetailPaneState
                                         },
                                         child: TextField(
                                           controller: proxyPassCtrl,
-                                          style: const TextStyle(fontSize: 13),
+                                          style: TextStyle(fontSize: 13),
                                           obscureText: true,
                                           decoration: _proxyInputDecoration(
                                             ctx,
@@ -3496,7 +3495,7 @@ class _DesktopProviderDetailPaneState
                       color: valid(value)
                           ? cs.primary
                           : cs.onSurface.withValues(alpha: 0.38),
-                      fontWeight: FontWeight.w600,
+                      fontWeight: AppFontWeights.semibold,
                     ),
                   ),
                 ),
@@ -3808,9 +3807,9 @@ class _DesktopProviderDetailPaneState
                                 Expanded(
                                   child: Text(
                                     l10n2.multiKeyPageEdit,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 13.5,
-                                      fontWeight: FontWeight.w700,
+                                      fontWeight: AppFontWeights.emphasis,
                                     ),
                                   ),
                                 ),
@@ -3836,7 +3835,7 @@ class _DesktopProviderDetailPaneState
                               const SizedBox(height: 6),
                               TextField(
                                 controller: aliasCtrl,
-                                style: const TextStyle(fontSize: 13),
+                                style: TextStyle(fontSize: 13),
                                 decoration: _inputDecoration(cc),
                               ),
                               const SizedBox(height: 12),
@@ -3844,7 +3843,7 @@ class _DesktopProviderDetailPaneState
                               const SizedBox(height: 6),
                               TextField(
                                 controller: keyCtrl,
-                                style: const TextStyle(fontSize: 13),
+                                style: TextStyle(fontSize: 13),
                                 decoration: _inputDecoration(cc),
                               ),
                               const SizedBox(height: 12),
@@ -3852,7 +3851,7 @@ class _DesktopProviderDetailPaneState
                               const SizedBox(height: 6),
                               TextField(
                                 controller: priCtrl,
-                                style: const TextStyle(fontSize: 13),
+                                style: TextStyle(fontSize: 13),
                                 decoration: _inputDecoration(
                                   cc,
                                 ).copyWith(hintText: '1-10'),
@@ -3984,9 +3983,9 @@ class _DesktopProviderDetailPaneState
                             Expanded(
                               child: Text(
                                 l10n.multiKeyPageTitle,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 13.5,
-                                  fontWeight: FontWeight.w700,
+                                  fontWeight: AppFontWeights.emphasis,
                                 ),
                               ),
                             ),
@@ -4047,7 +4046,7 @@ class _DesktopProviderDetailPaneState
                               style: TextStyle(
                                 fontSize: 14,
                                 color: cs.onSurface.withValues(alpha: 0.9),
-                                fontWeight: FontWeight.w600,
+                                fontWeight: AppFontWeights.semibold,
                               ),
                             ),
                           ),
@@ -4317,9 +4316,9 @@ class _DesktopProviderDetailPaneState
                       Center(
                         child: Text(
                           l10n.providerDetailPageTestConnectionTitle,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: AppFontWeights.emphasis,
                           ),
                         ),
                       ),
@@ -4354,8 +4353,8 @@ class _DesktopProviderDetailPaneState
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w600,
+                                  style: TextStyle(
+                                    fontWeight: AppFontWeights.semibold,
                                   ),
                                 ),
                               ),
@@ -4402,8 +4401,8 @@ class _DesktopProviderDetailPaneState
                               color: color,
                               fontSize: 14,
                               fontWeight: state == _TestState.success
-                                  ? FontWeight.w700
-                                  : FontWeight.w600,
+                                  ? AppFontWeights.emphasis
+                                  : AppFontWeights.semibold,
                             ),
                           ),
                         ),
@@ -4504,9 +4503,9 @@ class _DesktopProviderDetailPaneState
                     Expanded(
                       child: Text(
                         l10n.providerDetailPageConfirmDeleteTitle,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: AppFontWeights.emphasis,
                         ),
                       ),
                     ),
@@ -4625,9 +4624,9 @@ class _DesktopProviderDetailPaneState
                     Expanded(
                       child: Text(
                         l10n.providerDetailPageConfirmDeleteTitle,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: AppFontWeights.emphasis,
                         ),
                       ),
                     ),
@@ -5268,7 +5267,7 @@ Widget _sectionLabel(BuildContext context, String text, {bool bold = false}) {
     style: TextStyle(
       fontSize: 13,
       color: cs.onSurface.withValues(alpha: 0.8),
-      fontWeight: bold ? FontWeight.w700 : FontWeight.w400,
+      fontWeight: bold ? AppFontWeights.emphasis : AppFontWeights.regular,
     ),
   );
 }
@@ -5291,7 +5290,11 @@ class _GreyCapsule extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(fontSize: 11, color: fg, fontWeight: FontWeight.w600),
+        style: TextStyle(
+          fontSize: 11,
+          color: fg,
+          fontWeight: AppFontWeights.semibold,
+        ),
       ),
     );
   }
@@ -5509,7 +5512,7 @@ class _DesktopProviderGroupsDialogState
             onPressed: () => Navigator.of(ctx).pop(true),
             child: Text(
               l10n.providerGroupsDeleteConfirmOk,
-              style: const TextStyle(color: Colors.red),
+              style: TextStyle(color: Colors.red),
             ),
           ),
         ],
@@ -5580,9 +5583,9 @@ class _DesktopProviderGroupsDialogState
                         l10n.providerGroupsManageTitle,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: AppFontWeights.emphasis,
                         ),
                       ),
                     ),
@@ -5623,7 +5626,7 @@ class _DesktopProviderGroupsDialogState
                           child: child,
                         );
                       },
-                      onReorder: (oldIndex, newIndex) async {
+                      onReorderItem: (oldIndex, newIndex) async {
                         await context
                             .read<SettingsProvider>()
                             .reorderProviderGroupsWithUngrouped(
@@ -5710,7 +5713,10 @@ class _DesktopProviderGroupCard extends StatelessWidget {
               title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: AppFontWeights.semibold,
+              ),
             ),
           ),
           _DesktopCountPill(count: count),
@@ -5753,7 +5759,7 @@ class _DesktopCountPill extends StatelessWidget {
         style: TextStyle(
           fontSize: 12,
           color: cs.primary,
-          fontWeight: FontWeight.w700,
+          fontWeight: AppFontWeights.emphasis,
         ),
       ),
     );
@@ -5924,9 +5930,9 @@ class _DesktopProviderShareDialogState
                   Expanded(
                     child: Text(
                       l10n.shareProviderSheetTitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: AppFontWeights.emphasis,
                       ),
                     ),
                   ),
@@ -5987,7 +5993,7 @@ class _DesktopProviderShareDialogState
                   child: SingleChildScrollView(
                     child: SelectableText(
                       _code,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13.5,
                         height: 1.35,
                         fontFamily: 'monospace',
@@ -6106,7 +6112,7 @@ class _DialogActionButtonState extends State<_DialogActionButton> {
                   style: TextStyle(
                     color: enabled ? fg : fg.withValues(alpha: 0.5),
                     fontSize: 13.5,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: AppFontWeights.semibold,
                   ),
                 ),
               ],
@@ -6133,7 +6139,7 @@ class _BrandCircle extends StatelessWidget {
         name.isNotEmpty ? name.characters.first.toUpperCase() : '?',
         style: TextStyle(
           color: cs.primary,
-          fontWeight: FontWeight.w800,
+          fontWeight: AppFontWeights.heavy,
           fontSize: size * 0.45,
         ),
       );
@@ -6258,9 +6264,9 @@ class _ProviderListRowState extends State<_ProviderListRow> {
                   widget.name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: AppFontWeights.semibold,
                   ),
                 ),
               ),
@@ -6282,7 +6288,7 @@ class _ProviderListRowState extends State<_ProviderListRow> {
                   style: TextStyle(
                     fontSize: 11,
                     color: widget.enabled ? Colors.green : Colors.orange,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: AppFontWeights.emphasis,
                   ),
                 ),
               ),
@@ -6355,7 +6361,7 @@ class _AddFullWidthButtonState extends State<_AddFullWidthButton> {
                   widget.label,
                   style: TextStyle(
                     color: cs.primary,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: AppFontWeights.emphasis,
                   ),
                 ),
               ],
@@ -6477,9 +6483,9 @@ class _DesktopKeyRow extends StatelessWidget {
                   label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: AppFontWeights.semibold,
                   ),
                 ),
               ),
@@ -6615,9 +6621,9 @@ class _ModelGroupAccordionState extends State<_ModelGroupAccordion> {
                       Expanded(
                         child: Text(
                           widget.group,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13.5,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: AppFontWeights.emphasis,
                           ),
                         ),
                       ),
@@ -6754,7 +6760,7 @@ class _ModelRow extends StatelessWidget {
                 displayName,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 13.5),
+                style: TextStyle(fontSize: 13.5),
               ),
             ),
             const SizedBox(width: 8),

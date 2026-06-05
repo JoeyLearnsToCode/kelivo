@@ -6,6 +6,8 @@ import 'package:Kelivo/shared/widgets/export_capture_scope.dart';
 import 'package:Kelivo/shared/widgets/mermaid_image_cache.dart';
 import 'package:Kelivo/core/providers/settings_provider.dart';
 import 'package:Kelivo/l10n/app_localizations.dart';
+import 'package:Kelivo/theme/palettes.dart';
+import 'package:Kelivo/theme/theme_factory.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -262,6 +264,9 @@ Widget _markdownHarness(
   bool streaming = false,
   Map<String, Object>? preferences,
   void Function(String id)? onCitationTap,
+  ThemeData? theme,
+  ThemeData? darkTheme,
+  ThemeMode? themeMode,
 }) {
   SharedPreferences.setMockInitialValues(preferences ?? {});
   return ChangeNotifierProvider(
@@ -269,6 +274,9 @@ Widget _markdownHarness(
     child: MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      theme: theme,
+      darkTheme: darkTheme,
+      themeMode: themeMode,
       home: Scaffold(
         body: width == null
             ? MarkdownWithCodeHighlight(
@@ -1191,9 +1199,15 @@ ${rows.join('\n')}
   );
 
   testWidgets(
-    'MarkdownWithCodeHighlight renders blockquote as neutral leading line',
+    'MarkdownWithCodeHighlight renders light default blockquote line as gray',
     (tester) async {
-      await tester.pumpWidget(_markdownHarness('> 引用内容\n> 第二行', width: 320));
+      await tester.pumpWidget(
+        _markdownHarness(
+          '> 引用内容\n> 第二行',
+          width: 320,
+          theme: buildLightThemeForScheme(ThemePalettes.defaultPalette.light),
+        ),
+      );
       await tester.pump();
 
       final blockquote = find.byKey(const ValueKey('markdown-blockquote'));
@@ -1213,7 +1227,43 @@ ${rows.join('\n')}
       final lineDecoration =
           tester.widget<DecoratedBox>(line).decoration as BoxDecoration;
       final cs = Theme.of(tester.element(blockquote)).colorScheme;
-      expect(lineDecoration.color, cs.outlineVariant.withValues(alpha: 0.82));
+      expect(lineDecoration.color, cs.onSurfaceVariant.withValues(alpha: 0.36));
+      expect(
+        lineDecoration.color,
+        isNot(cs.outlineVariant.withValues(alpha: 0.82)),
+      );
+      expect(lineDecoration.borderRadius, BorderRadius.circular(2));
+      expect(lineDecoration.border, isNull);
+    },
+  );
+
+  testWidgets(
+    'MarkdownWithCodeHighlight keeps dark default blockquote line gray',
+    (tester) async {
+      await tester.pumpWidget(
+        _markdownHarness(
+          '> 引用内容\n> 第二行',
+          width: 320,
+          theme: buildLightThemeForScheme(ThemePalettes.defaultPalette.light),
+          darkTheme: buildDarkThemeForScheme(ThemePalettes.defaultPalette.dark),
+          themeMode: ThemeMode.dark,
+        ),
+      );
+      await tester.pump();
+
+      final blockquote = find.byKey(const ValueKey('markdown-blockquote'));
+      expect(blockquote, findsOneWidget);
+
+      final line = find.descendant(
+        of: blockquote,
+        matching: find.byKey(const ValueKey('markdown-blockquote-line')),
+      );
+      expect(line, findsOneWidget);
+
+      final lineDecoration =
+          tester.widget<DecoratedBox>(line).decoration as BoxDecoration;
+      final cs = Theme.of(tester.element(blockquote)).colorScheme;
+      expect(lineDecoration.color, cs.onSurfaceVariant.withValues(alpha: 0.48));
       expect(lineDecoration.borderRadius, BorderRadius.circular(2));
       expect(lineDecoration.border, isNull);
     },
@@ -1811,6 +1861,54 @@ A-->B
       isTrue,
     );
   });
+
+  testWidgets(
+    'MarkdownWithCodeHighlight keeps escaped and math pipes inside table cells',
+    (tester) async {
+      await tester.pumpWidget(
+        _markdownHarness(r'''
+| 项目 | 左对齐 | 居中 | 右对齐 |
+| :--- | :--- | :---: | ---: |
+| 普通文本 | alpha | beta | 123 |
+| 粗斜代码 | **bold** | *italic* | `code` |
+| 转义竖线 | a \| b | c \| d | 456 |
+| 行内数学 | $a+b$ | $\|x\|=1$ | $P(A\mid B)$ |
+'''),
+      );
+      await tester.pump();
+
+      final table = tester.widget<Table>(find.byType(Table).first);
+      expect(table.children, hasLength(5));
+      expect(table.children.map((row) => row.children.length), everyElement(4));
+      expect(_findMathWidget(), findsNWidgets(3));
+
+      final richTextPlainText = tester
+          .widgetList<RichText>(
+            find.descendant(
+              of: find.byType(Table),
+              matching: find.byType(RichText),
+            ),
+          )
+          .map((widget) => widget.text.toPlainText());
+      final selectablePlainText = tester
+          .widgetList<SelectableText>(
+            find.descendant(
+              of: find.byType(Table),
+              matching: find.byType(SelectableText),
+            ),
+          )
+          .map((widget) => widget.textSpan?.toPlainText() ?? widget.data ?? '');
+      final tableText = [
+        ...richTextPlainText,
+        ...selectablePlainText,
+      ].join('\n');
+
+      expect(tableText, contains('a | b'));
+      expect(tableText, contains('c | d'));
+      expect(tableText, isNot(contains(r'a \| b')));
+      expect(tableText, isNot(contains(r'c \| d')));
+    },
+  );
 
   testWidgets(
     'MarkdownWithCodeHighlight keeps dollar signs inside table code',
@@ -2822,6 +2920,23 @@ press5
     expect(plainText, isNot(contains('<br>')));
     expect(plainText, isNot(contains('<a href=')));
     expect(find.text('链接'), findsOneWidget);
+  });
+
+  testWidgets('MarkdownWithCodeHighlight normalizes strong weight on Android', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    try {
+      await tester.pumpWidget(_markdownHarness('这是 **粗体** 文本'));
+      await tester.pump();
+
+      final spans = _resolvedTextSpansFromRichText(tester);
+      final strongSpan = spans.singleWhere((span) => span.text == '粗体');
+
+      expect(strongSpan.style.fontWeight, FontWeight.w500);
+    } finally {
+      debugDefaultTargetPlatformOverride = null;
+    }
   });
 
   testWidgets('MarkdownWithCodeHighlight keeps p tag spacing compact', (

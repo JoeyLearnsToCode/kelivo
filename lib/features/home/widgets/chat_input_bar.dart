@@ -27,6 +27,7 @@ import '../../../shared/widgets/ios_tactile.dart';
 import '../../../utils/app_directories.dart';
 import 'package:super_clipboard/super_clipboard.dart';
 import '../../../desktop/desktop_context_menu.dart';
+import 'package:Kelivo/theme/app_font_weights.dart';
 
 class ChatInputBarController {
   _ChatInputBarState? _state;
@@ -53,7 +54,6 @@ class ChatInputBar extends StatefulWidget {
     this.onLongPressSelectModel,
     this.onOpenMcp,
     this.onLongPressMcp,
-    this.onToggleSearch,
     this.onOpenSearch,
     this.onMore,
     this.onConfigureReasoning,
@@ -71,7 +71,6 @@ class ChatInputBar extends StatefulWidget {
     this.supportsReasoning = true,
     this.showMcpButton = false,
     this.mcpActive = false,
-    this.searchEnabled = false,
     this.showMiniMapButton = false,
     this.onOpenMiniMap,
     this.onPickCamera,
@@ -101,7 +100,6 @@ class ChatInputBar extends StatefulWidget {
   final VoidCallback? onLongPressSelectModel;
   final VoidCallback? onOpenMcp;
   final VoidCallback? onLongPressMcp;
-  final ValueChanged<bool>? onToggleSearch;
   final VoidCallback? onOpenSearch;
   final VoidCallback? onMore;
   final VoidCallback? onConfigureReasoning;
@@ -119,7 +117,6 @@ class ChatInputBar extends StatefulWidget {
   final bool supportsReasoning;
   final bool showMcpButton;
   final bool mcpActive;
-  final bool searchEnabled;
   final bool showMiniMapButton;
   final VoidCallback? onOpenMiniMap;
   final VoidCallback? onPickCamera;
@@ -921,7 +918,7 @@ class _ChatInputBarState extends State<ChatInputBar>
           modelId: currentModelId,
         );
         final builtinSearchActive = toolsState.searchActive;
-        final appSearchEnabled = settings.searchEnabled;
+        final appSearchEnabled = ap.currentSearchEnabled;
         final brandAsset = (() {
           if (!appSearchEnabled || builtinSearchActive) return null;
           final services = settings.searchServices;
@@ -1999,7 +1996,7 @@ class _QueuedInputBanner extends StatelessWidget {
                 Text(
                   label,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+                    fontWeight: AppFontWeights.semibold,
                   ),
                 ),
                 if (hasPreview) ...[
@@ -2032,7 +2029,7 @@ class _QueuedInputBanner extends StatelessWidget {
               cancelLabel,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.primary,
-                fontWeight: FontWeight.w600,
+                fontWeight: AppFontWeights.semibold,
               ),
             ),
           ),
@@ -2097,7 +2094,7 @@ class _ImageModePill extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: fg,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: AppFontWeights.semibold,
                             letterSpacing: 0,
                           ),
                         ),

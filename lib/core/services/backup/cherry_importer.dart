@@ -10,6 +10,7 @@ import '../../models/conversation.dart';
 import '../../providers/settings_provider.dart';
 import '../chat/chat_service.dart';
 import '../../../utils/app_directories.dart';
+import 'cherry_direct_backup_reader.dart';
 
 class CherryImportResult {
   final int providers;
@@ -109,10 +110,17 @@ class CherryImporter {
         if (t is Map && t['id'] != null) {
           final id = t['id'].toString();
           topicMeta[id] = t.map((k, v) => MapEntry(k.toString(), v));
-          // Ensure assistantId is present (avoid null index warning by using local var)
           final tm = topicMeta[id]!;
-          final dynamic cand = t['assistantId'] ?? a['id'];
-          if (cand != null) tm['assistantId'] = cand.toString();
+          final parentAssistantId = (a['id'] ?? '').toString();
+          final topicAssistantId = (t['assistantId'] ?? '').toString();
+          // Cherry may keep a stale topic.assistantId; the parent assistant's
+          // topic list is the reliable ownership source.
+          final ownerAssistantId = parentAssistantId.isNotEmpty
+              ? parentAssistantId
+              : topicAssistantId;
+          if (ownerAssistantId.isNotEmpty) {
+            tm['assistantId'] = ownerAssistantId;
+          }
         }
       }
     }
@@ -331,6 +339,8 @@ class CherryImporter {
           // skip non-text entries
         }
       }
+      final directBackup = CherryDirectBackupReader.readArchive(archive);
+      if (directBackup != null) return directBackup;
     } catch (_) {}
 
     // 3) Try GZIP (some .bak may be gzip-compressed JSON)
@@ -944,9 +954,9 @@ class CherryImporter {
     int msgCount = 0;
     int extraSaved = 0; // number of files saved from base64/data urls
 
-    for (final entry in topicMessages.entries) {
-      final topicId = entry.key;
-      final msgsRaw = entry.value;
+    final topicIds = <String>{...topicMeta.keys, ...topicMessages.keys};
+    for (final topicId in topicIds) {
+      final msgsRaw = topicMessages[topicId] ?? const <Map<String, dynamic>>[];
       final meta = topicMeta[topicId] ?? const <String, dynamic>{};
       final title = (meta['name'] ?? 'Imported').toString();
       final pinned = meta['pinned'] as bool? ?? false;

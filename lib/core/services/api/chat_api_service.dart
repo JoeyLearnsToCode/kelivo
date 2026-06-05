@@ -250,7 +250,9 @@ class ChatApiService {
     String raw, {
     required bool allowRemoteImages,
     required bool allowLocalImages,
+    bool allowDataImages = true,
     bool keepRemoteMarkdownText = true,
+    bool keepDisallowedImageText = true,
   }) async {
     if (raw.isEmpty) return const _ParsedTextAndImages('', <_ImageRef>[]);
     final mdImg = RegExp(r'!\[[^\]]*\]\(([^)]+)\)');
@@ -274,7 +276,11 @@ class ChatApiService {
         }
         // Inline base64 / data URLs: always treat as image but keep them out of text.
         if (url.startsWith('data:')) {
-          images.add(_ImageRef('data', url));
+          if (allowDataImages) {
+            images.add(_ImageRef('data', url));
+          } else if (keepDisallowedImageText) {
+            buf.write(full);
+          }
           i = m1.end;
           continue;
         }
@@ -283,7 +289,7 @@ class ChatApiService {
           if (!allowRemoteImages) {
             // Model does not accept image input (or we intentionally skip http images):
             // keep original markdown so the model can see the template.
-            buf.write(full);
+            if (keepDisallowedImageText) buf.write(full);
             i = m1.end;
             continue;
           }
@@ -304,7 +310,7 @@ class ChatApiService {
         }
         // Local / relative path: only treat as image when the file exists.
         if (!allowLocalImages) {
-          buf.write(full);
+          if (keepDisallowedImageText) buf.write(full);
           i = m1.end;
           continue;
         }
@@ -337,13 +343,17 @@ class ChatApiService {
           continue;
         }
         if (p.startsWith('data:')) {
-          images.add(_ImageRef('data', p));
+          if (allowDataImages) {
+            images.add(_ImageRef('data', p));
+          } else if (keepDisallowedImageText) {
+            buf.write(full);
+          }
           i = m2.end;
           continue;
         }
         if (p.startsWith('http://') || p.startsWith('https://')) {
           if (!allowRemoteImages) {
-            buf.write(full);
+            if (keepDisallowedImageText) buf.write(full);
             i = m2.end;
             continue;
           }
@@ -352,7 +362,7 @@ class ChatApiService {
           continue;
         }
         if (!allowLocalImages) {
-          buf.write(full);
+          if (keepDisallowedImageText) buf.write(full);
           i = m2.end;
           continue;
         }
@@ -392,6 +402,74 @@ class ChatApiService {
       return 'data:$mime;base64,$b64';
     }
     return b64;
+  }
+
+  static String _textFromContentParts(dynamic content) {
+    if (content is String) return content.trim();
+    if (content is! List) return (content ?? '').toString().trim();
+
+    final buffer = StringBuffer();
+    for (final part in content) {
+      if (part is String) {
+        buffer.write(part);
+        continue;
+      }
+      if (part is! Map) continue;
+      final type = (part['type'] ?? '').toString();
+      if (type.isNotEmpty &&
+          type != 'text' &&
+          type != 'input_text' &&
+          type != 'output_text') {
+        continue;
+      }
+      final text = (part['text'] ?? part['content'] ?? '').toString();
+      if (text.isEmpty) continue;
+      if (buffer.isNotEmpty) buffer.write('\n');
+      buffer.write(text);
+    }
+    return buffer.toString().trim();
+  }
+
+  static Future<String> _stripImageMarkersFromText(String raw) async {
+    final parsed = await _parseTextAndImages(
+      raw,
+      allowRemoteImages: false,
+      allowLocalImages: false,
+      allowDataImages: false,
+      keepRemoteMarkdownText: false,
+      keepDisallowedImageText: false,
+    );
+    return parsed.text;
+  }
+
+  static Future<dynamic> _stripImageInputsFromContent(dynamic content) async {
+    if (content is String) return _stripImageMarkersFromText(content);
+    if (content is List) {
+      return _stripImageMarkersFromText(_textFromContentParts(content));
+    }
+    if (content is Map) {
+      return _stripImageMarkersFromText(_textFromContentParts([content]));
+    }
+    return content;
+  }
+
+  static Future<List<Map<String, dynamic>>> _stripImageInputsFromMessages(
+    List<Map<String, dynamic>> messages,
+  ) async {
+    final out = <Map<String, dynamic>>[];
+    for (final message in messages) {
+      final copy = Map<String, dynamic>.from(message);
+      copy.remove(multimodalInternalMediaPathsKey);
+      if (copy.containsKey('content')) {
+        copy['content'] = await _stripImageInputsFromContent(copy['content']);
+      }
+      out.add(copy);
+    }
+    return out;
+  }
+
+  static bool _supportsImageInput(ProviderConfig config, String modelId) {
+    return _effectiveModelInfo(config, modelId).input.contains(Modality.image);
   }
 
   static http.Client _clientFor(ProviderConfig cfg, CancelToken cancelToken) {
@@ -440,6 +518,7 @@ class ChatApiService {
     bool stream = true,
     String? requestId,
     bool allowImagesApiRouting = true,
+    bool ocrActive = false,
   }) async* {
     final kind = ProviderConfig.classify(
       config.id,
@@ -454,19 +533,32 @@ class ChatApiService {
       } catch (_) {}
       _activeCancelTokens[rid] = cancelToken;
     }
-    final safeMessages = _sanitizeMessages(messages);
+    final useOpenAIImagesApi =
+        kind == ProviderKind.openai &&
+        allowImagesApiRouting &&
+        _shouldUseOpenAIImagesApi(config, modelId);
+    final unicodeSafeMessages = _sanitizeMessages(messages);
+    final stripUnsupportedImageInputs =
+        !ocrActive &&
+        !useOpenAIImagesApi &&
+        !_supportsImageInput(config, modelId);
+    final safeMessages = stripUnsupportedImageInputs
+        ? await _stripImageInputsFromMessages(unicodeSafeMessages)
+        : unicodeSafeMessages;
+    final safeUserImagePaths = stripUnsupportedImageInputs
+        ? const <String>[]
+        : userImagePaths;
     final client = _clientFor(config, cancelToken);
 
     try {
       if (kind == ProviderKind.openai) {
-        if (allowImagesApiRouting &&
-            _shouldUseOpenAIImagesApi(config, modelId)) {
+        if (useOpenAIImagesApi) {
           yield* _sendOpenAIImagesStream(
             client,
             config,
             modelId,
             safeMessages,
-            userImagePaths: userImagePaths,
+            userImagePaths: safeUserImagePaths,
             extraHeaders: extraHeaders,
             extraBody: extraBody,
           );
@@ -476,7 +568,7 @@ class ChatApiService {
             config,
             modelId,
             safeMessages,
-            userImagePaths: userImagePaths,
+            userImagePaths: safeUserImagePaths,
             thinkingBudget: thinkingBudget,
             temperature: temperature,
             topP: topP,
@@ -493,7 +585,7 @@ class ChatApiService {
             config,
             modelId,
             safeMessages,
-            userImagePaths: userImagePaths,
+            userImagePaths: safeUserImagePaths,
             thinkingBudget: thinkingBudget,
             temperature: temperature,
             topP: topP,
@@ -511,7 +603,7 @@ class ChatApiService {
           config,
           modelId,
           safeMessages,
-          userImagePaths: userImagePaths,
+          userImagePaths: safeUserImagePaths,
           thinkingBudget: thinkingBudget,
           temperature: temperature,
           topP: topP,
@@ -532,7 +624,7 @@ class ChatApiService {
             config: config,
             modelId: modelId,
             messages: safeMessages,
-            userImagePaths: userImagePaths,
+            userImagePaths: safeUserImagePaths,
             thinkingBudget: thinkingBudget,
             temperature: temperature,
             topP: topP,
@@ -549,7 +641,7 @@ class ChatApiService {
             config,
             modelId,
             safeMessages,
-            userImagePaths: userImagePaths,
+            userImagePaths: safeUserImagePaths,
             thinkingBudget: thinkingBudget,
             temperature: temperature,
             topP: topP,
@@ -566,7 +658,7 @@ class ChatApiService {
             config,
             modelId,
             safeMessages,
-            userImagePaths: userImagePaths,
+            userImagePaths: safeUserImagePaths,
             thinkingBudget: thinkingBudget,
             temperature: temperature,
             topP: topP,
@@ -838,10 +930,18 @@ class ChatApiService {
           thinkingBudget,
         );
         final thinking = isReasoning
-            ? _claudeThinkingConfig(upstreamModelId, thinkingBudget)
+            ? _claudeThinkingConfig(
+                upstreamModelId,
+                thinkingBudget,
+                config: config,
+              )
             : null;
         final outputConfig = isReasoning
-            ? _claudeOutputConfig(upstreamModelId, thinkingBudget)
+            ? _claudeOutputConfig(
+                upstreamModelId,
+                thinkingBudget,
+                config: config,
+              )
             : null;
         final body = <String, dynamic>{
           'model': upstreamModelId,
@@ -886,8 +986,16 @@ class ChatApiService {
         final data = jsonDecode(responseText);
         final content = data['content'] as List?;
         if (content != null && content.isNotEmpty) {
-          final text = content.first['text'];
-          return (text ?? '').toString();
+          final buf = StringBuffer();
+          for (final item in content) {
+            if (item is! Map) continue;
+            if ((item['type'] ?? '').toString() != 'text') continue;
+            final text = item['text'];
+            if (text is String && text.isNotEmpty) {
+              buf.write(text);
+            }
+          }
+          return buf.toString();
         }
         return '';
       } else {
@@ -1046,6 +1154,21 @@ class ChatApiService {
 
   static bool _isClaudeReasoningEnabled(int? budget) => budget != 0;
 
+  static bool _isDeepSeekClaudeCompatible(
+    String modelId, {
+    ProviderConfig? config,
+  }) {
+    final lowerModelId = modelId.trim().toLowerCase();
+    if (lowerModelId.contains('deepseek')) return true;
+    if (config == null) return false;
+    final baseUrl = config.baseUrl.trim().toLowerCase();
+    final providerId = config.id.trim().toLowerCase();
+    final providerName = config.name.trim().toLowerCase();
+    return baseUrl.contains('api.deepseek.com') ||
+        providerId.contains('deepseek') ||
+        providerName.contains('deepseek');
+  }
+
   static bool _supportsClaudeAdaptiveThinking(String modelId) {
     final lower = modelId.trim().toLowerCase();
     if (!lower.contains('claude-')) return false;
@@ -1126,10 +1249,14 @@ class ChatApiService {
 
   static Map<String, dynamic>? _claudeThinkingConfig(
     String modelId,
-    int? budget,
-  ) {
+    int? budget, {
+    ProviderConfig? config,
+  }) {
     if (!_isClaudeReasoningEnabled(budget)) {
       return <String, dynamic>{'type': 'disabled'};
+    }
+    if (_isDeepSeekClaudeCompatible(modelId, config: config)) {
+      return <String, dynamic>{'type': 'enabled'};
     }
     if (_supportsClaudeAdaptiveThinking(modelId)) {
       return <String, dynamic>{'type': 'adaptive', 'display': 'summarized'};
@@ -1142,8 +1269,17 @@ class ChatApiService {
 
   static Map<String, dynamic>? _claudeOutputConfig(
     String modelId,
-    int? budget,
-  ) {
+    int? budget, {
+    ProviderConfig? config,
+  }) {
+    if (_isDeepSeekClaudeCompatible(modelId, config: config)) {
+      if (!_isClaudeReasoningEnabled(budget)) return null;
+      final effort = _claudeEffortForBudget(budget);
+      if (effort == 'auto' || effort == 'off') return null;
+      return <String, dynamic>{
+        'effort': (effort == 'xhigh' || effort == 'max') ? 'max' : 'high',
+      };
+    }
     if (!_supportsClaudeAdaptiveThinking(modelId) ||
         !_isClaudeReasoningEnabled(budget)) {
       return null;

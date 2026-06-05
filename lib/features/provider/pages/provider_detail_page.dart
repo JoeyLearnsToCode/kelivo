@@ -32,6 +32,7 @@ import '../../../core/services/haptics.dart';
 import '../../provider/widgets/provider_balance_badge.dart';
 import '../../provider/widgets/provider_avatar.dart';
 import '../../../utils/model_grouping.dart';
+import '../../../theme/app_font_weights.dart';
 
 class ProviderDetailPage extends StatefulWidget {
   const ProviderDetailPage({
@@ -221,7 +222,7 @@ class _ProviderDetailPageState extends State<ProviderDetailPage> {
             Expanded(
               child: Text(
                 _nameCtrl.text.isEmpty ? widget.displayName : _nameCtrl.text,
-                style: const TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 16),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -308,7 +309,7 @@ class _ProviderDetailPageState extends State<ProviderDetailPage> {
                           onPressed: () => Navigator.of(ctx).pop(true),
                           child: Text(
                             l10n.providerDetailPageDeleteButton,
-                            style: const TextStyle(color: Colors.red),
+                            style: TextStyle(color: Colors.red),
                           ),
                         ),
                       ],
@@ -408,9 +409,9 @@ class _ProviderDetailPageState extends State<ProviderDetailPage> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     text,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: AppFontWeights.medium,
                     ),
                   ),
                 ),
@@ -539,7 +540,7 @@ class _ProviderDetailPageState extends State<ProviderDetailPage> {
                       color: valid(value)
                           ? cs.primary
                           : cs.onSurface.withValues(alpha: 0.38),
-                      fontWeight: FontWeight.w600,
+                      fontWeight: AppFontWeights.semibold,
                     ),
                   ),
                 ),
@@ -588,7 +589,7 @@ class _ProviderDetailPageState extends State<ProviderDetailPage> {
                     text: 'Pollinations AI',
                     style: TextStyle(
                       color: cs.primary,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: AppFontWeights.emphasis,
                     ),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () async {
@@ -639,7 +640,7 @@ class _ProviderDetailPageState extends State<ProviderDetailPage> {
                         text: 'https://dashboard.x-aio.com',
                         style: TextStyle(
                           color: cs.primary,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: AppFontWeights.emphasis,
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () async {
@@ -694,7 +695,7 @@ class _ProviderDetailPageState extends State<ProviderDetailPage> {
                         text: 'https://siliconflow.cn',
                         style: TextStyle(
                           color: cs.primary,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: AppFontWeights.emphasis,
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () async {
@@ -1160,9 +1161,8 @@ class _ProviderDetailPageState extends State<ProviderDetailPage> {
               _isSelectionMode ? 160 : 100,
             ),
             itemCount: models.length,
-            onReorder: (oldIndex, newIndex) {
+            onReorderItem: (oldIndex, newIndex) {
               if (_isSelectionMode) return;
-              if (newIndex > oldIndex) newIndex -= 1;
               final list = List<String>.from(models);
               final item = list.removeAt(oldIndex);
               list.insert(newIndex, item);
@@ -1242,7 +1242,7 @@ class _ProviderDetailPageState extends State<ProviderDetailPage> {
                                     l10n.providerDetailPageDeleteModelButton,
                                     style: TextStyle(
                                       color: cs.error,
-                                      fontWeight: FontWeight.w700,
+                                      fontWeight: AppFontWeights.emphasis,
                                     ),
                                   ),
                                 ],
@@ -1541,9 +1541,9 @@ class _ProviderDetailPageState extends State<ProviderDetailPage> {
                       child: ProviderBalanceBadge(
                         providerKey: widget.keyName,
                         displayName: widget.displayName,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: AppFontWeights.semibold,
                         ),
                         color: cs.primary,
                       ),
@@ -2261,8 +2261,8 @@ class _ProviderDetailPageState extends State<ProviderDetailPage> {
                         color: fg,
                         fontSize: 14,
                         fontWeight: outlined
-                            ? FontWeight.w600
-                            : FontWeight.w500,
+                            ? AppFontWeights.semibold
+                            : AppFontWeights.medium,
                       ),
                     ),
                   ),
@@ -2423,7 +2423,7 @@ class _ProviderDetailPageState extends State<ProviderDetailPage> {
                       style: TextStyle(
                         color: colorScheme.onSurface,
                         fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: AppFontWeights.semibold,
                       ),
                     ),
                   ),
@@ -2530,7 +2530,7 @@ class _ProviderDetailPageState extends State<ProviderDetailPage> {
                             ? colorScheme.onSurface.withValues(alpha: 0.5)
                             : colorScheme.primary,
                         fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: AppFontWeights.semibold,
                       ),
                     ),
                   ),
@@ -2592,7 +2592,7 @@ class _ProviderDetailPageState extends State<ProviderDetailPage> {
                             ? colorScheme.onSurface.withValues(alpha: 0.5)
                             : colorScheme.error,
                         fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: AppFontWeights.semibold,
                       ),
                     ),
                   ),
@@ -3226,10 +3226,11 @@ class _ProviderDetailPageState extends State<ProviderDetailPage> {
                                                     Expanded(
                                                       child: Text(
                                                         g,
-                                                        style: const TextStyle(
+                                                        style: TextStyle(
                                                           fontSize: 14,
                                                           fontWeight:
-                                                              FontWeight.w600,
+                                                              AppFontWeights
+                                                                  .semibold,
                                                         ),
                                                         maxLines: 1,
                                                         overflow: TextOverflow
@@ -3425,9 +3426,9 @@ class _ProviderDetailPageState extends State<ProviderDetailPage> {
                                                                           children: [
                                                                             Text(
                                                                               m.displayName,
-                                                                              style: const TextStyle(
+                                                                              style: TextStyle(
                                                                                 fontSize: 14,
-                                                                                fontWeight: FontWeight.w600,
+                                                                                fontWeight: AppFontWeights.semibold,
                                                                               ),
                                                                               maxLines: 1,
                                                                               overflow: TextOverflow.ellipsis,
@@ -3632,9 +3633,9 @@ class _ModelCard extends StatelessWidget {
                     children: [
                       Text(
                         displayName,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: AppFontWeights.semibold,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -3750,9 +3751,9 @@ class _ConnectionTestDialogState extends State<_ConnectionTestDialog> {
               Center(
                 child: Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: AppFontWeights.emphasis,
                   ),
                 ),
               ),
@@ -3837,7 +3838,7 @@ class _ConnectionTestDialogState extends State<_ConnectionTestDialog> {
               Flexible(
                 child: Text(
                   _selectedModelId!,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  style: TextStyle(fontWeight: AppFontWeights.semibold),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -3891,7 +3892,7 @@ class _ConnectionTestDialogState extends State<_ConnectionTestDialog> {
               Flexible(
                 child: Text(
                   _selectedModelId!,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  style: TextStyle(fontWeight: AppFontWeights.semibold),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -3938,7 +3939,7 @@ class _ConnectionTestDialogState extends State<_ConnectionTestDialog> {
                     Expanded(
                       child: Text(
                         _selectedModelId!,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
+                        style: TextStyle(fontWeight: AppFontWeights.semibold),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
@@ -3961,7 +3962,7 @@ class _ConnectionTestDialogState extends State<_ConnectionTestDialog> {
           style: TextStyle(
             color: color,
             fontSize: 14,
-            fontWeight: FontWeight.w600,
+            fontWeight: AppFontWeights.semibold,
           ),
         ),
       ],
@@ -4075,7 +4076,7 @@ class _BrandAvatar extends StatelessWidget {
               style: TextStyle(
                 color: cs.primary,
                 fontSize: size * 0.5,
-                fontWeight: FontWeight.w700,
+                fontWeight: AppFontWeights.emphasis,
               ),
             )
           : (asset.endsWith('.svg')
@@ -4321,7 +4322,7 @@ class _BottomTabItemState extends State<_BottomTabItem> {
                     curve: Curves.easeOutCubic,
                     style: TextStyle(
                       fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: AppFontWeights.semibold,
                       color: c,
                     ),
                     child: Text(
@@ -4641,7 +4642,7 @@ class _PromptCachingTtlSegment extends StatelessWidget {
           curve: Curves.easeOutCubic,
           style: TextStyle(
             fontSize: 13,
-            fontWeight: FontWeight.w600,
+            fontWeight: AppFontWeights.semibold,
             color: selected
                 ? cs.onPrimary
                 : cs.onSurface.withValues(alpha: 0.7),
