@@ -805,12 +805,14 @@ class CherryImporter {
               final entry = filesIndexByRel[key]!;
               final bytes = entry.content as List<int>;
               await File(outPath).writeAsBytes(bytes);
-              final dt = _decodeDosDateTime(entry.lastModTime);
-              if (dt != null) {
-                await File(outPath).setLastModified(dt);
-              }
               result[id] = outPath;
               done = true;
+              final dt = _decodeDosDateTime(entry.lastModTime);
+              if (dt != null) {
+                try {
+                  await File(outPath).setLastModified(dt);
+                } catch (_) {}
+              }
             }
             if (!done &&
                 diskFilesIndexByRel != null &&
@@ -818,9 +820,13 @@ class CherryImporter {
               final src = diskFilesIndexByRel[key]!;
               final bytes = await File(src).readAsBytes();
               await File(outPath).writeAsBytes(bytes);
-              await File(outPath).setLastModified(await File(src).lastModified());
               result[id] = outPath;
               done = true;
+              try {
+                await File(
+                  outPath,
+                ).setLastModified(await File(src).lastModified());
+              } catch (_) {}
             }
             if (done) break;
           }
@@ -846,12 +852,14 @@ class CherryImporter {
             final entry = filesIndexByBase[base]!;
             final bytes = entry.content as List<int>;
             await File(outPath).writeAsBytes(bytes);
-            final dt = _decodeDosDateTime(entry.lastModTime);
-            if (dt != null) {
-              await File(outPath).setLastModified(dt);
-            }
             result[id] = outPath;
             done = true;
+            final dt = _decodeDosDateTime(entry.lastModTime);
+            if (dt != null) {
+              try {
+                await File(outPath).setLastModified(dt);
+              } catch (_) {}
+            }
           }
           if (!done &&
               diskFilesIndexByBase != null &&
@@ -859,9 +867,13 @@ class CherryImporter {
             final src = diskFilesIndexByBase[base]!;
             final bytes = await File(src).readAsBytes();
             await File(outPath).writeAsBytes(bytes);
-            await File(outPath).setLastModified(await File(src).lastModified());
             result[id] = outPath;
             done = true;
+            try {
+              await File(
+                outPath,
+              ).setLastModified(await File(src).lastModified());
+            } catch (_) {}
           }
           if (done) break;
         }
@@ -882,30 +894,36 @@ class CherryImporter {
           final entry = filesIndexById[id]!;
           final bytes = entry.content as List<int>;
           await File(outPath).writeAsBytes(bytes);
+          result[id] = outPath;
           final dt = _decodeDosDateTime(entry.lastModTime);
           if (dt != null) {
-            await File(outPath).setLastModified(dt);
+            try {
+              await File(outPath).setLastModified(dt);
+            } catch (_) {}
           }
-          result[id] = outPath;
           continue;
         }
         if (filesIndexByBase != null && filesIndexByBase.containsKey(idPlus)) {
           final entry = filesIndexByBase[idPlus]!;
           final bytes = entry.content as List<int>;
           await File(outPath).writeAsBytes(bytes);
+          result[id] = outPath;
           final dt = _decodeDosDateTime(entry.lastModTime);
           if (dt != null) {
-            await File(outPath).setLastModified(dt);
+            try {
+              await File(outPath).setLastModified(dt);
+            } catch (_) {}
           }
-          result[id] = outPath;
           continue;
         }
         if (diskFilesIndexById != null && diskFilesIndexById.containsKey(id)) {
           final src = diskFilesIndexById[id]!;
           final bytes = await File(src).readAsBytes();
           await File(outPath).writeAsBytes(bytes);
-          await File(outPath).setLastModified(await File(src).lastModified());
           result[id] = outPath;
+          try {
+            await File(outPath).setLastModified(await File(src).lastModified());
+          } catch (_) {}
           continue;
         }
         if (diskFilesIndexByBase != null &&
@@ -913,8 +931,10 @@ class CherryImporter {
           final src = diskFilesIndexByBase[idPlus]!;
           final bytes = await File(src).readAsBytes();
           await File(outPath).writeAsBytes(bytes);
-          await File(outPath).setLastModified(await File(src).lastModified());
           result[id] = outPath;
+          try {
+            await File(outPath).setLastModified(await File(src).lastModified());
+          } catch (_) {}
           continue;
         }
       } catch (_) {}
