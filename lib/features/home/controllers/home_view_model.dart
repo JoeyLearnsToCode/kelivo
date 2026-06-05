@@ -884,7 +884,7 @@ class HomeViewModel extends ChangeNotifier {
       if (v != null) sel[gid] = v;
     }
     final newConvo = await _chatService.forkConversation(
-      title: getTitleForLocale(_contextProvider),
+      title: currentConversation?.title ?? getTitleForLocale(_contextProvider),
       assistantId: currentConversation?.assistantId,
       sourceMessages: selected,
       versionSelections: sel,
