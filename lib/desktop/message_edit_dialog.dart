@@ -51,7 +51,6 @@ class _MessageEditDesktopDialogState extends State<_MessageEditDesktopDialog> {
     final service = FileUploadService(
       getContext: () => context,
       mediaController: ChatInputBarController(),
-      onScrollToBottom: () {},
     );
     final paths = await service.pickAndCopyPhotos();
     if (paths.isNotEmpty && mounted) {
@@ -63,7 +62,6 @@ class _MessageEditDesktopDialogState extends State<_MessageEditDesktopDialog> {
     final service = FileUploadService(
       getContext: () => context,
       mediaController: ChatInputBarController(),
-      onScrollToBottom: () {},
     );
     final result = await service.pickAndCopyFiles();
     if (mounted) {

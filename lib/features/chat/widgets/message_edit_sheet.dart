@@ -57,7 +57,6 @@ class _MessageEditSheetState extends State<_MessageEditSheet> {
     final service = FileUploadService(
       getContext: () => context,
       mediaController: ChatInputBarController(),
-      onScrollToBottom: () {},
     );
     final paths = await service.pickAndCopyPhotos();
     if (paths.isNotEmpty && mounted) {
@@ -69,7 +68,6 @@ class _MessageEditSheetState extends State<_MessageEditSheet> {
     final service = FileUploadService(
       getContext: () => context,
       mediaController: ChatInputBarController(),
-      onScrollToBottom: () {},
     );
     final result = await service.pickAndCopyFiles();
     if (mounted) {
