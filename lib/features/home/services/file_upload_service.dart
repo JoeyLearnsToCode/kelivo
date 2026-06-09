@@ -59,10 +59,9 @@ class FileUploadService {
     return out;
   }
 
-  /// 从相册选取图片
-  Future<void> onPickPhotos() async {
+  /// 从相册选取图片，裁剪后复制到应用目录，返回路径列表
+  Future<List<String>> pickAndCopyPhotos() async {
     try {
-      // On desktop, fall back to FilePicker as image_picker is not supported.
       if (PlatformUtils.isDesktopTarget) {
         final res = await FilePicker.platform.pickFiles(
           allowMultiple: true,
@@ -78,35 +77,37 @@ class FileUploadService {
             'heif',
           ],
         );
-        if (res == null || res.files.isEmpty) return;
+        if (res == null || res.files.isEmpty) return [];
         final toCopy = <XFile>[];
         for (final f in res.files) {
           if (f.path != null && f.path!.isNotEmpty) {
             toCopy.add(XFile(f.path!));
           }
         }
-        if (toCopy.isEmpty) return;
+        if (toCopy.isEmpty) return [];
         final croppedFiles = await _maybeCropImages(toCopy);
-        if (croppedFiles.isEmpty) return;
-        final paths = await copyPickedFiles(croppedFiles);
-        if (paths.isNotEmpty) {
-          mediaController.addImages(paths);
-          onScrollToBottom();
-        }
-        return;
+        if (croppedFiles.isEmpty) return [];
+        return copyPickedFiles(croppedFiles);
       }
 
       final picker = ImagePicker();
       final files = await picker.pickMultiImage();
-      if (files.isEmpty) return;
+      if (files.isEmpty) return [];
       final croppedFiles = await _maybeCropImages(files);
-      if (croppedFiles.isEmpty) return;
-      final paths = await copyPickedFiles(croppedFiles);
-      if (paths.isNotEmpty) {
-        mediaController.addImages(paths);
-        onScrollToBottom();
-      }
-    } catch (_) {}
+      if (croppedFiles.isEmpty) return [];
+      return copyPickedFiles(croppedFiles);
+    } catch (_) {
+      return [];
+    }
+  }
+
+  /// 从相册选取图片并添加到输入栏
+  Future<void> onPickPhotos() async {
+    final paths = await pickAndCopyPhotos();
+    if (paths.isNotEmpty) {
+      mediaController.addImages(paths);
+      onScrollToBottom();
+    }
   }
 
   /// 从相机拍照
@@ -232,17 +233,22 @@ class FileUploadService {
         lower.endsWith('.heif');
   }
 
-  /// 选取文件（图片、视频、文档等）
-  Future<void> onPickFiles() async {
+  /// 选取文件（图片、视频、文档），复制到应用目录，返回分类结果
+  Future<({List<String> imagePaths, List<DocumentAttachment> docs})>
+  pickAndCopyFiles() async {
     try {
       final res = await FilePicker.platform.pickFiles(
         allowMultiple: true,
         withData: false,
         type: FileType.custom,
         allowedExtensions: const [
-          // images
-          'png', 'jpg', 'jpeg', 'gif', 'webp', 'heic', 'heif',
-          // videos
+          'png',
+          'jpg',
+          'jpeg',
+          'gif',
+          'webp',
+          'heic',
+          'heif',
           'mp4',
           'avi',
           'mkv',
@@ -254,12 +260,10 @@ class FileUploadService {
           'webm',
           '3gp',
           '3gpp',
-          // audio
           'wav',
           'mp3',
           'pcm',
           'pcm16',
-          // docs
           'txt',
           'md',
           'json',
@@ -280,23 +284,24 @@ class FileUploadService {
           'yaml',
         ],
       );
-      if (res == null || res.files.isEmpty) return;
+      if (res == null || res.files.isEmpty) {
+        return (imagePaths: <String>[], docs: <DocumentAttachment>[]);
+      }
       final images = <String>[];
       final docs = <DocumentAttachment>[];
 
-      // Build a flat list preserving order, then map saved -> type
       final toCopy = <XFile>[];
-      final kinds = <bool>[]; // true=image, false=document
-      final names = <String>[];
+      final kinds = <bool>[];
       for (final f in res.files) {
         final path = f.path;
         if (path != null && path.isNotEmpty) {
           toCopy.add(XFile(path));
           kinds.add(isImageExtension(f.name));
-          names.add(f.name);
         }
       }
-      if (toCopy.isEmpty) return;
+      if (toCopy.isEmpty) {
+        return (imagePaths: <String>[], docs: <DocumentAttachment>[]);
+      }
       final saved = await copyPickedFiles(toCopy);
       for (int i = 0; i < saved.length; i++) {
         final savedPath = saved[i];
@@ -315,16 +320,24 @@ class FileUploadService {
           );
         }
       }
-      if (images.isNotEmpty) {
-        mediaController.addImages(images);
-      }
-      if (docs.isNotEmpty) {
-        mediaController.addFiles(docs);
-      }
-      if (images.isNotEmpty || docs.isNotEmpty) {
-        onScrollToBottom();
-      }
-    } catch (_) {}
+      return (imagePaths: images, docs: docs);
+    } catch (_) {
+      return (imagePaths: <String>[], docs: <DocumentAttachment>[]);
+    }
+  }
+
+  /// 选取文件（图片、视频、文档等）并添加到输入栏
+  Future<void> onPickFiles() async {
+    final result = await pickAndCopyFiles();
+    if (result.imagePaths.isNotEmpty) {
+      mediaController.addImages(result.imagePaths);
+    }
+    if (result.docs.isNotEmpty) {
+      mediaController.addFiles(result.docs);
+    }
+    if (result.imagePaths.isNotEmpty || result.docs.isNotEmpty) {
+      onScrollToBottom();
+    }
   }
 
   /// 处理桌面端拖放的文件 (macOS/Windows/Linux)
