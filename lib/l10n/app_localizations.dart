@@ -3761,6 +3761,12 @@ abstract class AppLocalizations {
   /// **'Delete All Versions'**
   String get messageMoreSheetDeleteAllVersions;
 
+  /// No description provided for @messageMoreSheetSpeak.
+  ///
+  /// In en, this message translates to:
+  /// **'Speak'**
+  String get messageMoreSheetSpeak;
+
   /// No description provided for @reasoningBudgetSheetOff.
   ///
   /// In en, this message translates to:

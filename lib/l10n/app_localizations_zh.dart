@@ -1892,6 +1892,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get messageMoreSheetDeleteAllVersions => '删除全部版本';
 
   @override
+  String get messageMoreSheetSpeak => '朗读';
+
+  @override
   String get reasoningBudgetSheetOff => '关闭';
 
   @override
@@ -7171,6 +7174,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get messageMoreSheetDeleteAllVersions => '删除全部版本';
 
   @override
+  String get messageMoreSheetSpeak => '朗读';
+
+  @override
   String get reasoningBudgetSheetOff => '关闭';
 
   @override
@@ -12447,6 +12453,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get messageMoreSheetDeleteAllVersions => '刪除全部版本';
+
+  @override
+  String get messageMoreSheetSpeak => '朗讀';
 
   @override
   String get reasoningBudgetSheetOff => '關閉';

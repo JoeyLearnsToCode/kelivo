@@ -657,6 +657,7 @@
   "messageMoreSheetCreateBranch": "建立分支",
   "messageMoreSheetDelete": "刪除本版本",
   "messageMoreSheetDeleteAllVersions": "刪除全部版本",
+  "messageMoreSheetSpeak": "朗讀",
   "reasoningBudgetSheetOff": "關閉",
   "reasoningBudgetSheetAuto": "自動",
   "reasoningBudgetSheetLight": "輕度推理",

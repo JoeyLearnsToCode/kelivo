@@ -816,7 +816,9 @@ class _MessageListViewState extends State<MessageListView> {
           message,
           canDeleteAllVersions: true,
         );
-        if (action == MessageMoreAction.deleteAllVersions) {
+        if (action == MessageMoreAction.speak) {
+          widget.onSpeakMessage?.call(message);
+        } else if (action == MessageMoreAction.deleteAllVersions) {
           await widget.onDeleteAllVersions?.call(message, widget.byGroup);
         } else if (action == MessageMoreAction.edit) {
           widget.onEditMessage?.call(message);

@@ -1955,6 +1955,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messageMoreSheetDeleteAllVersions => 'Delete All Versions';
 
   @override
+  String get messageMoreSheetSpeak => 'Speak';
+
+  @override
   String get reasoningBudgetSheetOff => 'Off';
 
   @override

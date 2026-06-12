@@ -772,6 +772,7 @@
   "messageMoreSheetCreateBranch": "Create Branch",
   "messageMoreSheetDelete": "Delete This Version",
   "messageMoreSheetDeleteAllVersions": "Delete All Versions",
+  "messageMoreSheetSpeak": "Speak",
   "reasoningBudgetSheetOff": "Off",
   "reasoningBudgetSheetAuto": "Auto",
   "reasoningBudgetSheetLight": "Light Reasoning",

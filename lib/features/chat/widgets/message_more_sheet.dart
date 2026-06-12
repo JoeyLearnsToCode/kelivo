@@ -18,10 +18,13 @@ import '../../../shared/pages/webview_page.dart';
 import '../../../desktop/html_preview_dialog.dart';
 import 'dart:convert';
 import 'package:Kelivo/theme/app_font_weights.dart';
+import 'package:Kelivo/core/providers/tts_provider.dart';
+import 'package:provider/provider.dart';
 
 enum MessageMoreAction {
   edit,
   fork,
+  speak,
   deleteAllVersions,
   share,
   selectMessages,
@@ -106,6 +109,14 @@ Future<MessageMoreAction?> showMessageMoreSheet(
           label: l10n.messageMoreSheetEdit,
           onTap: () {
             selected = MessageMoreAction.edit;
+          },
+        ),
+      if (message.role != 'user')
+        DesktopContextMenuItem(
+          icon: Lucide.Volume2,
+          label: l10n.messageMoreSheetSpeak,
+          onTap: () {
+            selected = MessageMoreAction.speak;
           },
         ),
       DesktopContextMenuItem(
@@ -305,6 +316,24 @@ class _MessageMoreSheetState extends State<_MessageMoreSheet> {
                         label: l10n.messageMoreSheetEdit,
                         onTap: () {
                           Navigator.of(context).pop(MessageMoreAction.edit);
+                        },
+                      ),
+                    if (widget.message.role != 'user')
+                      Consumer<TtsProvider>(
+                        builder: (context, tts, _) {
+                          final active = tts.playbackState.isActive;
+                          return _actionItem(
+                            icon: active ? Lucide.CircleStop : Lucide.Volume2,
+                            label: l10n.messageMoreSheetSpeak,
+                            iconColor: active
+                                ? Theme.of(context).colorScheme.primary
+                                : null,
+                            onTap: () {
+                              Navigator.of(
+                                context,
+                              ).pop(MessageMoreAction.speak);
+                            },
+                          );
                         },
                       ),
                     _actionItem(
