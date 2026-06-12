@@ -18,11 +18,13 @@ import '../../../shared/pages/webview_page.dart';
 import '../../../desktop/html_preview_dialog.dart';
 import 'dart:convert';
 import 'package:Kelivo/theme/app_font_weights.dart';
+import 'package:Kelivo/core/providers/tts_provider.dart';
+import 'package:provider/provider.dart';
 
 enum MessageMoreAction {
   edit,
   fork,
-  deleteCurrentVersion,
+  speak,
   deleteAllVersions,
   share,
   selectMessages,
@@ -109,6 +111,14 @@ Future<MessageMoreAction?> showMessageMoreSheet(
             selected = MessageMoreAction.edit;
           },
         ),
+      if (message.role != 'user')
+        DesktopContextMenuItem(
+          icon: Lucide.Volume2,
+          label: l10n.messageMoreSheetSpeak,
+          onTap: () {
+            selected = MessageMoreAction.speak;
+          },
+        ),
       DesktopContextMenuItem(
         icon: Lucide.Share,
         label: l10n.messageMoreSheetShare,
@@ -128,14 +138,6 @@ Future<MessageMoreAction?> showMessageMoreSheet(
         label: l10n.messageMoreSheetCreateBranch,
         onTap: () {
           selected = MessageMoreAction.fork;
-        },
-      ),
-      DesktopContextMenuItem(
-        icon: Lucide.Trash2,
-        label: l10n.messageMoreSheetDelete,
-        danger: true,
-        onTap: () {
-          selected = MessageMoreAction.deleteCurrentVersion;
         },
       ),
       if (canDeleteAllVersions)
@@ -316,6 +318,24 @@ class _MessageMoreSheetState extends State<_MessageMoreSheet> {
                           Navigator.of(context).pop(MessageMoreAction.edit);
                         },
                       ),
+                    if (widget.message.role != 'user')
+                      Consumer<TtsProvider>(
+                        builder: (context, tts, _) {
+                          final active = tts.playbackState.isActive;
+                          return _actionItem(
+                            icon: active ? Lucide.CircleStop : Lucide.Volume2,
+                            label: l10n.messageMoreSheetSpeak,
+                            iconColor: active
+                                ? Theme.of(context).colorScheme.primary
+                                : null,
+                            onTap: () {
+                              Navigator.of(
+                                context,
+                              ).pop(MessageMoreAction.speak);
+                            },
+                          );
+                        },
+                      ),
                     _actionItem(
                       icon: Lucide.Share,
                       label: l10n.messageMoreSheetShare,
@@ -337,16 +357,6 @@ class _MessageMoreSheetState extends State<_MessageMoreSheet> {
                       label: l10n.messageMoreSheetCreateBranch,
                       onTap: () {
                         Navigator.of(context).pop(MessageMoreAction.fork);
-                      },
-                    ),
-                    _actionItem(
-                      icon: Lucide.Trash2,
-                      label: l10n.messageMoreSheetDelete,
-                      danger: true,
-                      onTap: () {
-                        Navigator.of(
-                          context,
-                        ).pop(MessageMoreAction.deleteCurrentVersion);
                       },
                     ),
                     if (widget.canDeleteAllVersions)

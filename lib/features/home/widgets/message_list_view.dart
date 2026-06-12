@@ -809,17 +809,15 @@ class _MessageListViewState extends State<MessageListView> {
       onEdit: (message.role == 'assistant' || message.role == 'user')
           ? () => widget.onEditMessage?.call(message)
           : null,
-      onDelete: message.role == 'user'
-          ? () => widget.onDeleteMessage?.call(message, widget.byGroup)
-          : null,
+      onDelete: () => widget.onDeleteMessage?.call(message, widget.byGroup),
       onMore: () async {
         final action = await showMessageMoreSheet(
           context,
           message,
           canDeleteAllVersions: true,
         );
-        if (action == MessageMoreAction.deleteCurrentVersion) {
-          await widget.onDeleteMessage?.call(message, widget.byGroup);
+        if (action == MessageMoreAction.speak) {
+          widget.onSpeakMessage?.call(message);
         } else if (action == MessageMoreAction.deleteAllVersions) {
           await widget.onDeleteAllVersions?.call(message, widget.byGroup);
         } else if (action == MessageMoreAction.edit) {

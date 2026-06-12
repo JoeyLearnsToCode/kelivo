@@ -1432,7 +1432,7 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget> {
                           child: IosIconButton(
                             size: 16,
                             padding: EdgeInsets.all(4),
-                            icon: Lucide.RefreshCw,
+                            icon: Lucide.Plus,
                             color: cs.onSurface.withValues(alpha: 0.9),
                             onTap: widget.onResend == null
                                 ? null
@@ -1452,6 +1452,22 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget> {
                               icon: Lucide.Pencil,
                               color: cs.onSurface.withValues(alpha: 0.9),
                               onTap: widget.onEdit,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                      ],
+                      if (widget.onDelete != null) ...[
+                        SizedBox(
+                          width: 28,
+                          height: 28,
+                          child: Center(
+                            child: IosIconButton(
+                              size: 16,
+                              padding: EdgeInsets.all(4),
+                              icon: Lucide.Trash2,
+                              color: cs.onSurface.withValues(alpha: 0.9),
+                              onTap: widget.onDelete,
                             ),
                           ),
                         ),
@@ -2493,7 +2509,7 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget> {
                             child: IosIconButton(
                               size: 16,
                               padding: EdgeInsets.all(4),
-                              icon: Lucide.RefreshCw,
+                              icon: Lucide.Plus,
                               color: cs.onSurface.withValues(alpha: 0.9),
                               onTap: widget.onRegenerate == null
                                   ? null
@@ -2502,45 +2518,6 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget> {
                                     ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 6),
-                        Consumer<TtsProvider>(
-                          builder: (context, tts, _) {
-                            final ttsActive = tts.playbackState.isActive;
-                            return SizedBox(
-                              width: 28,
-                              height: 28,
-                              child: Center(
-                                child: IosIconButton(
-                                  size: 16,
-                                  padding: EdgeInsets.all(4),
-                                  onTap: widget.onSpeak,
-                                  color: cs.onSurface.withValues(alpha: 0.9),
-                                  builder: (color) => AnimatedSwitcher(
-                                    duration: const Duration(milliseconds: 200),
-                                    transitionBuilder: (child, anim) =>
-                                        ScaleTransition(
-                                          scale: anim,
-                                          child: FadeTransition(
-                                            opacity: anim,
-                                            child: child,
-                                          ),
-                                        ),
-                                    child: Icon(
-                                      ttsActive
-                                          ? Lucide.CircleStop
-                                          : Lucide.Volume2,
-                                      key: ValueKey(
-                                        ttsActive ? 'stop' : 'speak',
-                                      ),
-                                      size: 16,
-                                      color: color,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
                         ),
                         const SizedBox(width: 6),
                         SizedBox(
@@ -2590,6 +2567,22 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget> {
                           ),
                         ),
                         const SizedBox(width: 6),
+                        if (widget.onDelete != null) ...[
+                          SizedBox(
+                            width: 28,
+                            height: 28,
+                            child: Center(
+                              child: IosIconButton(
+                                size: 16,
+                                padding: EdgeInsets.all(4),
+                                icon: Lucide.Trash2,
+                                color: cs.onSurface.withValues(alpha: 0.9),
+                                onTap: widget.onDelete,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                        ],
                         SizedBox(
                           width: 28,
                           height: 28,

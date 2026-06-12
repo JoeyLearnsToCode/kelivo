@@ -1652,6 +1652,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backupPageS3PathStyle => 'Path-style addressing';
 
   @override
+  String get backupPageUserAgent => 'User-Agent';
+
+  @override
+  String get backupPageUserAgentHint => 'Optional';
+
+  @override
   String get backupPageSave => 'Save';
 
   @override
@@ -1949,6 +1955,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messageMoreSheetDeleteAllVersions => 'Delete All Versions';
 
   @override
+  String get messageMoreSheetSpeak => 'Speak';
+
+  @override
   String get reasoningBudgetSheetOff => 'Off';
 
   @override
@@ -1965,6 +1974,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reasoningBudgetSheetXhigh => 'Extreme Reasoning';
+
+  @override
+  String get reasoningBudgetSheetMax => 'Maximum Reasoning';
 
   @override
   String get reasoningBudgetSheetTitle => 'Reasoning Chain Strength';
@@ -4020,6 +4032,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get displaySettingsPageChatBackgroundMaskTitle =>
       'Chat Background Overlay Opacity';
+
+  @override
+  String get displaySettingsPageChatInputBackgroundOpacityTitle =>
+      'Input Box Background Opacity';
 
   @override
   String get displaySettingsPageThemeSettingsTitle => 'Theme Settings';
