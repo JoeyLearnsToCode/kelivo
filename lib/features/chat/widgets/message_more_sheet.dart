@@ -22,7 +22,6 @@ import 'package:Kelivo/theme/app_font_weights.dart';
 enum MessageMoreAction {
   edit,
   fork,
-  deleteCurrentVersion,
   deleteAllVersions,
   share,
   selectMessages,
@@ -128,14 +127,6 @@ Future<MessageMoreAction?> showMessageMoreSheet(
         label: l10n.messageMoreSheetCreateBranch,
         onTap: () {
           selected = MessageMoreAction.fork;
-        },
-      ),
-      DesktopContextMenuItem(
-        icon: Lucide.Trash2,
-        label: l10n.messageMoreSheetDelete,
-        danger: true,
-        onTap: () {
-          selected = MessageMoreAction.deleteCurrentVersion;
         },
       ),
       if (canDeleteAllVersions)
@@ -337,16 +328,6 @@ class _MessageMoreSheetState extends State<_MessageMoreSheet> {
                       label: l10n.messageMoreSheetCreateBranch,
                       onTap: () {
                         Navigator.of(context).pop(MessageMoreAction.fork);
-                      },
-                    ),
-                    _actionItem(
-                      icon: Lucide.Trash2,
-                      label: l10n.messageMoreSheetDelete,
-                      danger: true,
-                      onTap: () {
-                        Navigator.of(
-                          context,
-                        ).pop(MessageMoreAction.deleteCurrentVersion);
                       },
                     ),
                     if (widget.canDeleteAllVersions)
