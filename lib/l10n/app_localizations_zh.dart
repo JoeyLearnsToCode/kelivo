@@ -1598,6 +1598,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get backupPageS3PathStyle => '路径风格（Path-style）';
 
   @override
+  String get backupPageUserAgent => 'User-Agent';
+
+  @override
+  String get backupPageUserAgentHint => '可选';
+
+  @override
   String get backupPageSave => '保存';
 
   @override
@@ -1902,6 +1908,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get reasoningBudgetSheetXhigh => '极限推理';
+
+  @override
+  String get reasoningBudgetSheetMax => '全力推理';
 
   @override
   String get reasoningBudgetSheetTitle => '思维链强度';
@@ -3853,6 +3862,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get displaySettingsPageChatBackgroundMaskTitle => '背景图片遮罩透明度';
+
+  @override
+  String get displaySettingsPageChatInputBackgroundOpacityTitle => '输入框背景透明度';
 
   @override
   String get displaySettingsPageThemeSettingsTitle => '主题设置';
@@ -6865,6 +6877,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get backupPageS3PathStyle => '路径风格（Path-style）';
 
   @override
+  String get backupPageUserAgent => 'User-Agent';
+
+  @override
+  String get backupPageUserAgentHint => '可选';
+
+  @override
   String get backupPageSave => '保存';
 
   @override
@@ -7169,6 +7187,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get reasoningBudgetSheetXhigh => '极限推理';
+
+  @override
+  String get reasoningBudgetSheetMax => '全力推理';
 
   @override
   String get reasoningBudgetSheetTitle => '思维链强度';
@@ -9120,6 +9141,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get displaySettingsPageChatBackgroundMaskTitle => '背景图片遮罩透明度';
+
+  @override
+  String get displaySettingsPageChatInputBackgroundOpacityTitle => '输入框背景透明度';
 
   @override
   String get displaySettingsPageThemeSettingsTitle => '主题设置';
@@ -12132,6 +12156,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get backupPageS3PathStyle => '路徑風格（Path-style）';
 
   @override
+  String get backupPageUserAgent => 'User-Agent';
+
+  @override
+  String get backupPageUserAgentHint => '可選';
+
+  @override
   String get backupPageSave => '儲存';
 
   @override
@@ -12435,6 +12465,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get reasoningBudgetSheetXhigh => '極限推理';
+
+  @override
+  String get reasoningBudgetSheetMax => '全力推理';
 
   @override
   String get reasoningBudgetSheetTitle => '思維鏈強度';
@@ -14385,6 +14418,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get displaySettingsPageChatBackgroundMaskTitle => '聊天背景遮罩透明度';
+
+  @override
+  String get displaySettingsPageChatInputBackgroundOpacityTitle => '輸入框背景透明度';
 
   @override
   String get displaySettingsPageThemeSettingsTitle => '主題設定';

@@ -3179,6 +3179,18 @@ abstract class AppLocalizations {
   /// **'Path-style addressing'**
   String get backupPageS3PathStyle;
 
+  /// No description provided for @backupPageUserAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'User-Agent'**
+  String get backupPageUserAgent;
+
+  /// No description provided for @backupPageUserAgentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get backupPageUserAgentHint;
+
   /// No description provided for @backupPageSave.
   ///
   /// In en, this message translates to:
@@ -3784,6 +3796,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Extreme Reasoning'**
   String get reasoningBudgetSheetXhigh;
+
+  /// No description provided for @reasoningBudgetSheetMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum Reasoning'**
+  String get reasoningBudgetSheetMax;
 
   /// No description provided for @reasoningBudgetSheetTitle.
   ///
@@ -7459,6 +7477,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Chat Background Overlay Opacity'**
   String get displaySettingsPageChatBackgroundMaskTitle;
+
+  /// No description provided for @displaySettingsPageChatInputBackgroundOpacityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Input Box Background Opacity'**
+  String get displaySettingsPageChatInputBackgroundOpacityTitle;
 
   /// No description provided for @displaySettingsPageThemeSettingsTitle.
   ///
