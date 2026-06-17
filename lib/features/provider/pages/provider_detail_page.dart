@@ -2306,7 +2306,102 @@ class _ProviderDetailPageState extends State<ProviderDetailPage> {
             ? l10n.mcpAssistantSheetClearAll
             : l10n.mcpAssistantSheetSelectAll;
         final selectIcon = allSelected ? Lucide.Square : Lucide.CheckSquare;
+        final detectLabel = _isDetecting
+            ? l10n.providerDetailPageBatchDetecting
+            : l10n.providerDetailPageBatchDetectButton;
         final deleteDisabled = _selectedModels.isEmpty || _isDetecting;
+        final buttonTextStyle = DefaultTextStyle.of(context).style.merge(
+          TextStyle(fontSize: 14, fontWeight: AppFontWeights.semibold),
+        );
+        final textScaler = MediaQuery.textScalerOf(context);
+        final textDirection = Directionality.of(context);
+        final locale = Localizations.maybeLocaleOf(context);
+
+        double labelWidth(String label) {
+          final painter = TextPainter(
+            text: TextSpan(text: label, style: buttonTextStyle),
+            maxLines: 1,
+            textDirection: textDirection,
+            textScaler: textScaler,
+            locale: locale,
+          )..layout();
+          return painter.width;
+        }
+
+        double buttonWidth({
+          required String label,
+          required bool showLabel,
+          required EdgeInsets padding,
+          double iconSize = 20,
+        }) {
+          final width =
+              padding.horizontal +
+              iconSize +
+              (showLabel ? 8 + labelWidth(label) : 0);
+          return width < 44 ? 44 : width;
+        }
+
+        final toolbarInnerWidth =
+            availableWidth - horizontalMargin * 2 - toolbarPadding.horizontal;
+        final toolbarTextBudget = toolbarInnerWidth - 8;
+        double totalWidth({
+          required bool showSelectLabel,
+          required bool showDetectLabel,
+          required bool showDeleteLabel,
+        }) {
+          return buttonWidth(
+                label: selectLabel,
+                showLabel: showSelectLabel,
+                padding: iconOnlyPadding,
+              ) +
+              itemGap +
+              buttonWidth(
+                label: '',
+                showLabel: false,
+                padding: iconButtonPadding,
+                iconSize: 18,
+              ) +
+              itemGap +
+              buttonWidth(
+                label: detectLabel,
+                showLabel: showDetectLabel,
+                padding: showDetectLabel ? textButtonPadding : iconOnlyPadding,
+              ) +
+              itemGap +
+              buttonWidth(
+                label: l10n.providerDetailPageDeleteSelectedModelsButton,
+                showLabel: showDeleteLabel,
+                padding: iconOnlyPadding,
+              );
+        }
+
+        var showSelectLabel = true;
+        var showDetectLabel = true;
+        var showDeleteLabel = true;
+        if (totalWidth(
+              showSelectLabel: showSelectLabel,
+              showDetectLabel: showDetectLabel,
+              showDeleteLabel: showDeleteLabel,
+            ) >
+            toolbarTextBudget) {
+          showDeleteLabel = false;
+        }
+        if (totalWidth(
+              showSelectLabel: showSelectLabel,
+              showDetectLabel: showDetectLabel,
+              showDeleteLabel: showDeleteLabel,
+            ) >
+            toolbarTextBudget) {
+          showSelectLabel = false;
+        }
+        if (totalWidth(
+              showSelectLabel: showSelectLabel,
+              showDetectLabel: showDetectLabel,
+              showDeleteLabel: showDeleteLabel,
+            ) >
+            toolbarTextBudget) {
+          showDetectLabel = false;
+        }
 
         return _buildToolbarShell(
           colorScheme: cs,
@@ -2319,7 +2414,7 @@ class _ProviderDetailPageState extends State<ProviderDetailPage> {
               _buildSelectionToolbarSelectButton(
                 label: selectLabel,
                 icon: selectIcon,
-                showLabel: !compact,
+                showLabel: showSelectLabel,
                 padding: iconOnlyPadding,
                 colorScheme: cs,
                 allSelected: allSelected,
@@ -2330,27 +2425,16 @@ class _ProviderDetailPageState extends State<ProviderDetailPage> {
                 colorScheme: cs,
               ),
               SizedBox(width: itemGap),
-              if (compact)
-                _buildSelectionToolbarDetectButton(
-                  l10n: l10n,
-                  showLabel: false,
-                  padding: iconOnlyPadding,
-                  colorScheme: cs,
-                )
-              else
-                Flexible(
-                  fit: FlexFit.loose,
-                  child: _buildSelectionToolbarDetectButton(
-                    l10n: l10n,
-                    showLabel: true,
-                    padding: textButtonPadding,
-                    colorScheme: cs,
-                  ),
-                ),
+              _buildSelectionToolbarDetectButton(
+                l10n: l10n,
+                showLabel: showDetectLabel,
+                padding: showDetectLabel ? textButtonPadding : iconOnlyPadding,
+                colorScheme: cs,
+              ),
               SizedBox(width: itemGap),
               _buildSelectionToolbarDeleteButton(
                 l10n: l10n,
-                showLabel: !compact,
+                showLabel: showDeleteLabel,
                 padding: iconOnlyPadding,
                 disabled: deleteDisabled,
                 colorScheme: cs,
@@ -3974,6 +4058,7 @@ class _ConnectionTestDialogState extends State<_ConnectionTestDialog> {
       context,
       widget.providerKey,
       widget.providerDisplayName,
+      initialModelId: _selectedModelId,
     );
     if (selected != null) {
       setState(() {
@@ -4015,9 +4100,15 @@ class _ConnectionTestDialogState extends State<_ConnectionTestDialog> {
 Future<String?> showModelPickerForTest(
   BuildContext context,
   String providerKey,
-  String providerDisplayName,
-) async {
-  final sel = await showModelSelector(context, limitProviderKey: providerKey);
+  String providerDisplayName, {
+  String? initialModelId,
+}) async {
+  final sel = await showModelSelector(
+    context,
+    limitProviderKey: providerKey,
+    initialProviderKey: initialModelId == null ? null : providerKey,
+    initialModelId: initialModelId,
+  );
   return sel?.modelId;
 }
 
