@@ -2309,9 +2309,11 @@ class _DesktopProviderDetailPaneState
     final cs = Theme.of(context).colorScheme;
     final sp = context.read<SettingsProvider>();
     final l10n = AppLocalizations.of(context)!;
-    _syncProviderSettingsControllersFromConfig(
-      sp.getProviderConfig(widget.providerKey, defaultName: widget.displayName),
+    final cfg = sp.getProviderConfig(
+      widget.providerKey,
+      defaultName: widget.displayName,
     );
+    _syncProviderSettingsControllersFromConfig(cfg);
     await showDialog<void>(
       context: context,
       barrierDismissible: true,
